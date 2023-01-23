@@ -1,0 +1,10 @@
+import subprocess
+import os
+myBat = open(r'new.bat','w+')
+myBat.write('@echo off\n'
+            'cd MS office directory path & powerpnt.exe\n'
+            )
+myBat.close()
+
+# new.bat should point to path
+# use dir powerpnt.exe /s on cmd to find MS office directory path
