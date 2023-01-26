@@ -1,0 +1,9 @@
+#Randomly rotate screen in either direction every 30 seconds
+
+import time
+import random
+import os
+import subprocess
+def main(): time.sleep(30) # wait for 30 seconds
+random.choice(["rotate", "360", "720"])
+main()
