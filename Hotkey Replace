@@ -1,0 +1,8 @@
+import pyautogui
+import keyboard
+
+while True:
+    if keyboard.is_pressed('left windows'):
+        print(pyautogui.hotkey('alt', 'tab'))
+
+#For the love of my life - May your wrists not hurt for much longer...
