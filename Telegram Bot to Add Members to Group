@@ -1,0 +1,350 @@
+from tkinter import *
+from tkinter.ttk import *
+from tkinter import messagebox
+from time import sleep
+from telethon.sync import TelegramClient
+from telethon.tl.functions.messages import GetDialogsRequest
+from telethon.tl.types import InputPeerEmpty
+import csv
+from tkinter.simpledialog import askstring
+from telethon.sync import TelegramClient
+from telethon.tl.functions.messages import GetDialogsRequest
+from telethon.tl.types import InputPeerEmpty, InputPeerChannel, InputPeerUser
+from telethon.errors.rpcerrorlist import PeerFloodError, UserPrivacyRestrictedError
+from telethon.tl.functions.channels import InviteToChannelRequest
+import sys
+import csv
+import traceback
+import time
+import random
+import demoji
+
+class GUI_Application:
+    client = TelegramClient('+11111111',1111111,'111a231134d3s4234234')
+    def __init__(self,root):
+        self.root = root
+        
+        lbl_title = Label(self.root,text="Press Connect Button After input Data!",font=("Helvetica", 14))
+        lbl_title.grid(row=0,column=0,columnspan=2)
+        lbl_id = Label(self.root, text="Api Id:")
+        lbl_id.grid(row=1,column=0)
+        lbl_id = Label(self.root, text="Api Hash:")
+        lbl_id.grid(row=2,column=0)
+        lbl_id = Label(self.root, text="Phone No:")
+        lbl_id.grid(row=3,column=0)
+
+        id_text = IntVar()
+        id_text.set(1859416)
+        id_entry = Entry(self.root,textvariable=id_text,width=50)
+        id_entry.grid(row=1,column=1)
+        #idno = id_text.get()
+        #print(idno)
+
+        hash_text = StringVar()
+        hash_text.set("a10b03ee0ad0270cf89bc74bb64759aa")
+        hash_entry = Entry(self.root,textvariable=hash_text,width=50)
+        #hash_code = hash_text.get()
+        hash_entry.grid(row=2,column=1)
+
+        phone_text = StringVar()
+        phone_text.set("+14372194806")
+        phone_entry = Entry(self.root,textvariable=phone_text,width=50)
+        #phone_no = phone_text.get()
+        phone_entry.grid(row=3,column=1)
+        #lambda: obj.connect_client(self.idno,hash_code,phone_no)
+        btn_connect = Button(self.root,text="Connect",width=30,command=lambda: self.connect_client(lbl_status,from_group,to_group))
+        btn_connect.grid(row=4,column=0,columnspan=2)
+
+        lbl_space = Label(self.root)
+        lbl_space.grid(row=5,column=0,columnspan=2)
+        
+        lbl_title2 = Label(self.root,text="Select Groups and Click on Fetch!",font=("Helvetica", 14))
+        lbl_title2.grid(row=6,column=0,columnspan=2)
+
+        lbl_from_group = Label(self.root, text="From Group:")
+        lbl_from_group.grid(row=7,column=0)
+        
+        from_group = Combobox(self.root,width=40)
+        from_group.grid(row=7,column=1)
+        from_group['values'] = [1,2,3,4,5]
+
+        
+
+        lbl_to_group = Label(self.root, text="To Group:")
+        lbl_to_group.grid(row=9,column=0)
+        
+        to_group = Combobox(self.root,width=40)
+        to_group.grid(row=9,column=1)
+        to_group['values'] = [1,2,3,4,5]
+
+
+        lbl_space3 = Label(self.root)
+        lbl_space3.grid(row=8,column=0)
+        
+        btn_add1 = Button(self.root,text="Fetch From Members",width=15,command=lambda: self.fetch_from_Members(from_group.current(),lbl_status))
+        btn_add1.grid(row=8,column=1)
+
+        lbl_space3 = Label(self.root)
+        lbl_space3.grid(row=10,column=0)
+        
+        btn_add2 = Button(self.root,text="Fetch To Members",width=15,command=lambda: self.fetch_to_Members(to_group.current(),lbl_status))
+        btn_add2.grid(row=10,column=1)
+
+        lbl_space3 = Label(self.root)
+        lbl_space3.grid(row=11,column=0)
+        
+        btn_add = Button(self.root,text="Add Members",width=30,command=lambda: self.addTo(to_group.current(),lbl_status))
+        btn_add.grid(row=12,column=0,columnspan=2)
+
+        lbl_space4 = Label(self.root)
+        lbl_space4.grid(row=13,column=0)
+
+        lbl_status = Label(self.root,text="Status!",font=("Helvetica", 14))
+        lbl_status.grid(row=14,column=0,columnspan=2)
+        
+
+        #sleep(5)
+
+    def connect_client(self,labelStatus,fromGroup,toGroup):
+        api_id = 1859416
+        api_hash = "a10b03ee0ad0270cf89bc74bb64759aa"
+        phone = "+14372194806"
+        print(api_id," ",api_hash)
+        global client
+        client = TelegramClient(phone, api_id, api_hash)
+        client.start()
+        #verificationCode = askstring('Varification Code', 'Please Enter Code Here')
+        #print(verificationCode)
+        if not client.is_user_authorized():
+            client.send_code_request(phone)
+            client.sign_in(phone, input('Enter the code: '))
+     
+        labelStatus.configure(text="Signed in successfully!!")
+
+        #fetching start from here 
+        chats = []
+        last_date = None
+        chunk_size = 200
+        groups = []
+        result = client(GetDialogsRequest(
+                     offset_date=last_date,
+                     offset_id=0,
+                     offset_peer=InputPeerEmpty(),
+                     limit=chunk_size,
+                     hash = 0
+                 ))
+        chats.extend(result.chats)
+
+        for chat in chats:
+            try:
+                if chat.megagroup== True:
+                    groups.append(chat)
+            except:
+                continue
+        indexOfGroup=0
+        groupTitles = list()
+        for g in groups:
+            groupTitles.append(str(indexOfGroup)+" "+translate(g.title))
+            print(str(indexOfGroup)+" "+g.title)
+            indexOfGroup+=1
+        #print()
+        fromGroup['values'] = tuple(translate(groupTitles))
+        #toGroup['values'] = tuple(groupTitles)
+
+    def fetch_from_Members(self,fromInd,statusLabel):
+        try:
+            chats = []
+            last_date = None
+            chunk_size = 200
+            groups=[]
+            global client
+            result = client(GetDialogsRequest(
+                         offset_date=last_date,
+                         offset_id=0,
+                         offset_peer=InputPeerEmpty(),
+                         limit=chunk_size,
+                         hash = 0
+                     ))
+            chats.extend(result.chats)
+
+            for chat in chats:
+                try:
+                    if chat.megagroup== True:
+                        groups.append(chat)
+                except:
+                    continue
+
+            g_index = fromInd
+            #print(g_index)
+            target_group=groups[int(g_index)]        
+            statusLabel.configure(text="Fetching Members for From Group...")
+
+            all_participants = []
+            all_participants = client.get_participants(target_group, aggressive=True)
+
+            with open("FromGroupMembers.csv","w",encoding='UTF-8') as f:
+                writer = csv.writer(f,delimiter=",",lineterminator="\n")
+                writer.writerow(['username','user id', 'access hash','name','group', 'group id'])
+                for user in all_participants:
+                    if user.username:
+                        username= user.username
+                    else:
+                        username= ""
+                    if user.first_name:
+                        first_name= user.first_name
+                    else:
+                        first_name= ""
+                    if user.last_name:
+                        last_name= user.last_name
+                    else:
+                        last_name= ""
+                    name= (first_name + ' ' + last_name).strip()
+                    writer.writerow([username,user.id,user.access_hash,name,target_group.title, target_group.id])      
+
+            statusLabel.configure(text="From Group All Members Fetched!!!")
+        except Exception as exception:
+            print("Please Proceed by Step by Step")
+
+
+    def fetch_to_Members(self,toInd,statusLabel):
+        chats = []
+        last_date = None
+        chunk_size = 200
+        groups=[]
+        try:
+            global client
+            result = client(GetDialogsRequest(
+                         offset_date=last_date,
+                         offset_id=0,
+                         offset_peer=InputPeerEmpty(),
+                         limit=chunk_size,
+                         hash = 0
+                     ))
+            chats.extend(result.chats)
+
+            for chat in chats:
+                try:
+                    if chat.megagroup== True:
+                        groups.append(chat)
+                except:
+                    continue
+
+            g_index = toInd
+            target_group=groups[int(g_index)]        
+            statusLabel.configure(text="Fetching Members for To Group...")
+
+            all_participants = []
+            all_participants = client.get_participants(target_group, aggressive=True)
+
+            with open("ToGroupMembers.csv","w",encoding='UTF-8') as f:
+                writer = csv.writer(f,delimiter=",",lineterminator="\n")
+                writer.writerow(['username','user id', 'access hash','name','group', 'group id'])
+                for user in all_participants:
+                    if user.username:
+                        username= user.username
+                    else:
+                        username= ""
+                    if user.first_name:
+                        first_name= user.first_name
+                    else:
+                        first_name= ""
+                    if user.last_name:
+                        last_name= user.last_name
+                    else:
+                        last_name= ""
+                    name= (first_name + ' ' + last_name).strip()
+                    writer.writerow([username,user.id,user.access_hash,name,target_group.title, target_group.id])      
+
+            statusLabel.configure(text="To Group All Members Fetched!!!")
+        except Exception as exception:
+            print("Please Proceed by Step by Step")
+            
+    def addTo(self,toGroupId,statusLabel):
+        input_file = 'FromGroupMembers.csv'
+        users = []
+        global client
+        with open(input_file, encoding='UTF-8') as f:
+            rows = csv.reader(f,delimiter=",",lineterminator="\n")
+            next(rows, None)
+            for row in rows:
+                user = {}
+                user['username'] = row[0]
+                user['id'] = int(row[1])
+                user['access_hash'] = int(row[2])
+                user['name'] = row[3]
+                users.append(user)
+
+        chats = []
+        last_date = None
+        chunk_size = 200
+        groups=[]
+
+        result = client(GetDialogsRequest(
+                     offset_date=last_date,
+                     offset_id=0,
+                     offset_peer=InputPeerEmpty(),
+                     limit=chunk_size,
+                     hash = 0
+                 ))
+        chats.extend(result.chats)
+
+        for chat in chats:
+            try:
+                if chat.megagroup== True:
+                    groups.append(chat)
+            except:
+                continue
+
+##        print('Choose a group to add members:')
+##        i=0
+##        for group in groups:
+##            print(str(i) + '- ' + group.title)
+##            i+=1
+##
+##        g_index = input("Enter a Number: ")
+        g_index = toGroupId
+        target_group=groups[int(g_index)]
+
+        target_group_entity = InputPeerChannel(target_group.id,target_group.access_hash)
+
+        #mode = int(input("Enter 1 to add by username or 2 to add by ID: "))
+        mode=2
+
+        n = 0
+
+        for user in users:
+            n += 1
+            if n % 50 == 0:
+                sleep(900)
+            try:
+                print ("Adding {}".format(user['id']))
+                if mode == 1:
+                    if user['username'] == "":
+                        continue
+                    user_to_add = client.get_input_entity(user['username'])
+                elif mode == 2:
+                    user_to_add = InputPeerUser(user['id'], user['access_hash'])
+                else:
+                    sys.exit("Invalid Mode Selected. Please Try Again.")
+                client(InviteToChannelRequest(target_group_entity,[user_to_add]))
+                print("Waiting for 60-180 Seconds...")
+                time.sleep(2) #(random.randrange(60, 180))
+            except PeerFloodError:
+                print("Getting Flood Error from telegram. Script is stopping now. Please try again after some time.")
+            except UserPrivacyRestrictedError:
+                print("The user's privacy settings do not allow you to do this. Skipping.")
+            except:
+                traceback.print_exc()
+                print("Unexpected Error")
+                continue
+
+        statusLabel.configure(text="Completed")
+            
+
+if __name__ == '__main__':
+    master = Tk()
+    master.geometry('400x500+400+200')
+    master.title("Telegram Bot")
+    master.resizable(0,0)
+    app = GUI_Application(master)
+    master.mainloop()
