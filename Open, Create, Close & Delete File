@@ -14,6 +14,10 @@ text = ["Text to write in Bat"]
 fileobject.write(str(text))
 fileobject.close()
 
+# To save a Batch file or change file type to pdf etc.
+os.rename(str(path), r"C:\Users\neera\Desktop\Python\bat.bat")
+# To save a Batch file or change file type to pdf etc.
+
 if os.path.exists(str(path)):
     os.remove(str(path))
 else:
