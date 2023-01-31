@@ -1,0 +1,20 @@
+import docx
+from docx2pdf import convert
+
+doc = docx.Document("FILE PATH")
+
+all_paras = doc.paragraphs
+len(all_paras)
+
+for para in all_paras:
+    print(para.text)
+    print("-------")
+
+Add Paragraphs to Word Doc
+mydoc = docx.Document()
+mydoc.add_paragraph("This is first paragraph of a MS Word file.")
+mydoc.add_heading("This is level 1 heading", 0)
+mydoc.add_heading("This is level 2 heading", 1)
+mydoc.save("FILE PATH")
+
+convert ("INPUT FILE PATH", "OUTPUT FILE PATH")
