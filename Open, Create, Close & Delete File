@@ -15,7 +15,7 @@ fileobject.write(str(text))
 fileobject.close()
 
 # To save a Batch file or change file type to pdf etc.
-os.rename(str(path), r"C:\Users\neera\Desktop\Python\bat.bat")
+os.rename(str(path), r"C:\Users\Python\bat.bat")
 # To save a Batch file or change file type to pdf etc.
 
 if os.path.exists(str(path)):
