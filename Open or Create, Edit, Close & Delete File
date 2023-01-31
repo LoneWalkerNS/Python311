@@ -1,0 +1,20 @@
+#Can be used to create and use bat files
+
+import os
+
+path = (FILE PATH)
+
+if os.path.exists(str(path)):
+    fileobject = open(str(path), "w+")
+else:
+    fileobject = open(str(path), "x")
+
+text = ["Text to write in Bat"]
+
+fileobject.write(str(text))
+fileobject.close()
+
+if os.path.exists(str(path)):
+    os.remove(str(path))
+else:
+    print("The file does not exist")
