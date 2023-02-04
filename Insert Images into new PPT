@@ -1,0 +1,23 @@
+import pptx
+from pptx.util import Inches, Pt
+from pptx import Presentation
+import os
+
+img_dir = r'file path'
+
+
+prs = Presentation()
+
+for i in os.listdir(img_dir):
+    img_path = os.path.join(img_dir, i)
+
+    slide = prs.slides.add_slide(prs.slide_layouts[7])
+
+    img_left = Inches(0.01)
+    img_top = Inches(0.01)
+    width = Inches(10)
+    height = Inches(7.5)
+    pic = slide.shapes.add_picture(img_path, img_left, img_top, height=height, width = width)
+
+
+prs.save(file path)
