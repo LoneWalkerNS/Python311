@@ -1,0 +1,39 @@
+import pptx
+from pptx.util import Inches, Pt
+from pptx import Presentation
+import os
+
+img_dir = path of images to use
+txt_dir = path of text to add
+
+prs = Presentation()
+
+for i in os.listdir(img_dir):
+    img_path = os.path.join(img_dir, i)
+
+    for i in os.listdir(txt_dir):
+        txt_path = os.path.join(txt_dir, i)
+
+        slide = prs.slides.add_slide(prs.slide_layouts[6]) #change if you need different slides
+
+        file = open(txt_path, 'r', encoding="latin-1")
+        docText = file.read()
+
+        splitText = docText.split('\n')
+        for j in range(len(splitText)):
+
+            if j == 0:
+                heading_tf = slide.shapes.title
+            
+            else:
+                txBox = slide.shapes.add_textbox(Inches(0.5), Inches(3.33), Inches(9.2), Inches(2))
+                tf = txBox.text_frame
+                tf.text = splitText[j]
+                p = tf.add_paragraph()
+
+            img_left = Inches(2)
+            img_top = Inches(0.5)
+            height = Inches(2.8)
+            pic = slide.shapes.add_picture(img_path, img_left, img_top, height=height)
+
+prs.save(path to save file)
