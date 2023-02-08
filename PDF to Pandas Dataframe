@@ -1,0 +1,20 @@
+import pandas as pd
+import numpy
+import string
+import re
+from PyPDF2 import PdfReader
+
+def extract_pdf_text(file_path):
+    reader = PdfReader(file_path, "rb")
+    text = ""
+    for p in reader.pages:
+        text += p.extract_text()
+    return text
+
+text = extract_pdf_text(r"Path")
+words_and_punctuation = split_text_into_words_and_punctuation(text)
+
+df = pd.DataFrame(words_and_punctuation)
+print(df)
+
+Step 1 of NLP
