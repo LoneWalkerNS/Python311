@@ -1,0 +1,61 @@
+import requests
+import time
+
+# replace with your Facebook access token and page ID
+access_token = "your_access_token"
+page_id = "your_page_id"
+
+# set up a session to persist cookies across requests
+session = requests.Session()
+
+# set the user agent to a browser-like string
+session.headers.update({'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'})
+
+# create a new post with an image and keywords
+url = "https://graph.facebook.com/v12.0/{}/photos".format(page_id)
+
+# replace with the path to the image file on your local system
+image_path = "/path/to/image.jpg"
+
+# open the image file and read its contents
+with open(image_path, "rb") as image_file:
+    image_data = image_file.read()
+
+# set up the request data with the image and keywords
+data = {
+    "access_token": access_token,
+    "caption": "Example post with image and keywords",
+    "url": "file://{}".format(image_path),
+    "published": "true",
+    "tags": "python, facebook"
+}
+
+# make a POST request to create the new post
+response = session.post(url, data=data, files={"source": image_data})
+
+# check the response for errors and get the ID of the post
+if response.status_code == requests.codes.ok:
+    response_json = response.json()
+    post_id = response_json.get("id")
+    print("Post created successfully with ID {}".format(post_id))
+else:
+    print("Post creation failed with error code {}".format(response.status_code))
+    post_id = None
+
+# pause for a few seconds to simulate human-like behavior
+time.sleep(5)
+
+# delete the post if it was created successfully
+if post_id is not None:
+    url = "https://graph.facebook.com/v12.0/{}".format(post_id)
+    params = {"access_token": access_token}
+    response = session.delete(url, params=params)
+
+    # check the response for errors
+    if response.status_code == requests.codes.ok:
+        print("Post deleted successfully!")
+    else:
+        print("Post deletion failed with error code {}".format(response.status_code))
+
+# pause for a few more seconds to simulate human-like behavior
+time.sleep(5)
